@@ -49,8 +49,16 @@ class BroadcastListener(channel: MethodChannel) : BroadcastReceiver() {
     }
 
     private fun getAppLaunched(context: Context, intent: Intent): Boolean {
-    val appLaunched = intent.getBooleanExtra(Constants.APP_LAUNCHED, true)
+//    val appLaunched = intent.getBooleanExtra(Constants.APP_LAUNCHED, true)
 
+        //Check if the app is in the foreground
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        val runningAppProcesses = activityManager.runningAppProcesses
+        val foregroundProcess = runningAppProcesses[0].processName
+        val packageName = context.packageName
+
+        val appLaunched = foregroundProcess == packageName
+        
     if (appLaunched) {
         // Bring the app to the foreground by launching the main activity
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
