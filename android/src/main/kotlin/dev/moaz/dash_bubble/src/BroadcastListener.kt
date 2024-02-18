@@ -58,8 +58,8 @@ class BroadcastListener(channel: MethodChannel) : BroadcastReceiver() {
         val packageName = context.packageName
 
         val appLaunched = foregroundProcess == packageName
-        
-    if (appLaunched) {
+
+    if (!appLaunched) {
         // Bring the app to the foreground by launching the main activity
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         launchIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
