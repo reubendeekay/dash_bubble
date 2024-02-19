@@ -1,8 +1,10 @@
 package dev.moaz.dash_bubble.src
 
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 
 /** This broadcast listener is used to listen for the bubble callbacks */
@@ -48,8 +50,39 @@ class BroadcastListener(channel: MethodChannel) : BroadcastReceiver() {
         )
     }
 
+
+/** This method is to Check if the app is in not the current focused app */
+private fun isAppInForeground(context: Context): Boolean {
+    val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+    val appProcesses = activityManager.runningAppProcesses
+    if (appProcesses != null) {
+        for (appProcess in appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                appProcess.processName == context.packageName
+            ) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+
+
+
     private fun getAppLaunched(context: Context, intent: Intent): Boolean {
-//
+
+    if (isAppInForeground(context)) {
+        Log.d("Bubble", "App is in the foreground")
+        println("App is in the foreground")
+            return false
+        }
+    println("App is in the background")
+        Log.d("Bubble", "App is background")
+
+
         // Bring the app to the foreground by launching the main activity
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         launchIntent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
